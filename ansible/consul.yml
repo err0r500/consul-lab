@@ -1,0 +1,8 @@
+---
+
+- name: install consul
+  hosts: all
+  become: yes
+  gather_facts: False
+  roles:
+    - consul-deps
