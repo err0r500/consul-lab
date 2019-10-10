@@ -1,5 +1,13 @@
 ---
 
+- name: append if server
+  become: none
+  copy:
+    src: ./consul_bootstrap.sh
+    dest: ~/server.sh
+    mode: '0700'
+  when: inventory_hostname == 'master'
+
 - name: install unzip 
   become: yes
   package:
@@ -19,10 +27,34 @@
   args:
     creates: /usr/local/bin/consul
 
+- shell: consul keygen 
+  register: consul_keygen
+  when: inventory_hostname == 'master'
+
+- set_fact:
+     consul_key={{consul_keygen.stdout}}
+  when: inventory_hostname == 'master'
 
 - name: copy base install script
   become: none
   copy:
     src: ./consul_bootstrap.sh
     dest: ~/
+    mode: '0700'
+
+- name: copy consul service definition 
+  become: yes
+  copy:
+    src: ../../../../files/consul/agent.service
+    dest: /etc/systemd/system/consul.service
+    mode: '0700'
+    
+- name: Ensures /etc/consul.d/ dir exists
+  file: path=/etc/consul.d state=directory
+
+- name: master consul agent config 
+  become: yes
+  template:
+    src: ../../../../files/consul/{{inventory_hostname}}.j2
+    dest: /etc/consul.d/consul.hcl
     mode: '0700'

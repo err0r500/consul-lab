@@ -2,7 +2,7 @@
 
 - name: install consul
   hosts: all
+  order: sorted
   become: yes
-  gather_facts: False
   roles:
     - consul-deps

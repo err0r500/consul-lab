@@ -10,15 +10,11 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "master" do |c|
-      c.vm.hostname = "dc1-server"
+      c.vm.hostname = "master"
       c.vm.network "private_network", ip: "172.16.0.10"
 
       c.vm.provider "virtualbox" do |vb|
         vb.memory = "2048"
-      end
-
-      c.vm.provision "ansible" do |ansible| 
-        ansible.playbook = "./ansible/consul.yml"
       end
   end
 
@@ -27,9 +23,19 @@ Vagrant.configure("2") do |config|
         c.vm.hostname = "worker-#{n}"
         c.vm.network "private_network", ip: "172.16.1.1#{n}"
 
-        c.vm.provision "ansible" do |ansible| 
-          ansible.playbook = "./ansible/consul.yml"
-        end
     end
   end
+
+  config.vm.define 'controller' do |machine|
+    machine.vm.network "private_network", ip: "172.16.100.11"
+
+    machine.vm.provision :ansible_local do |ansible|
+      ansible.playbook       = "/vagrant/ansible/consul.yml"
+      ansible.verbose        = true
+      ansible.install        = true
+      ansible.limit          = "all" 
+      ansible.inventory_path = "/vagrant/ansible/inventory"
+    end
+  end
+
 end
