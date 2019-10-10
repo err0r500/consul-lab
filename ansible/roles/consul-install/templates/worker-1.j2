@@ -2,3 +2,7 @@ datacenter = "dc1"
 data_dir = "/tmp"
 encrypt = "{{ hostvars['master']['consul_key'] }}"
 advertise_addr = "172.16.1.11"
+retry_join = ["172.16.0.10"]
+addresses {
+    http  = "127.0.0.1 172.17.0.1"
+}

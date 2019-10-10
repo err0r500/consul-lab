@@ -1,8 +1,0 @@
----
-
-- name: install consul
-  hosts: all
-  order: sorted
-  become: yes
-  roles:
-    - consul-deps

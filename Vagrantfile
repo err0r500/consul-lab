@@ -27,11 +27,11 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define 'controller' do |machine|
-    machine.vm.network "private_network", ip: "172.16.100.11"
+    machine.vm.network "private_network", ip: "172.16.2.10"
 
     machine.vm.provision :ansible_local do |ansible|
-      ansible.playbook       = "/vagrant/ansible/consul.yml"
-      ansible.verbose        = true
+      ansible.playbook       = "/vagrant/ansible/main.yml"
+      # ansible.verbose        = true
       ansible.install        = true
       ansible.limit          = "all" 
       ansible.inventory_path = "/vagrant/ansible/inventory"

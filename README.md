@@ -1,48 +1,37 @@
-Istio capabilities :
-load balancing 
-- HTTP
-- gRPC
-- websocket
-- TCP
+# Consul lab
 
-routing:
+The simplest way to get a fully working Consul Cluster on 3 VMs :)
 
-retries:
+## Requirements
 
-failover:
+- virtualbox
+- vagrant
 
-fault-injection:
+## Run
 
-ACL:
+```
+vagrant up
+```
 
-rate-limits
+Then have a coffee while looking at vagrant upping the VMs and setting everything for you.
 
-quotas:
+---
 
-service-to-service : mTLS
+When it's finished, ssh in any VM* and check your Consul cluster :
 
-Fine-grained control of traffic behavior with rich routing rules, retries, failovers, and fault injection.
+```
+vagrant ssh worker-0
+consul members
+```
 
-A pluggable policy layer and configuration API supporting access controls, rate limits and quotas.
+you should get something like that :
 
-Automatic metrics, logs, and traces for all traffic within a cluster, including cluster ingress and egress.
-
-Secure service-to-service communication in a cluster with strong identity-based authentication and authorization.
-
-
-
-
-
-
+```
+Node      Address           Status  Type    Build  Protocol  DC   Segment
+master    172.16.0.10:8301  alive   server  1.6.1  2         dc1  <all>
+worker-0  172.16.1.10:8301  alive   client  1.6.1  2         dc1  <default>
+worker-1  172.16.1.11:8301  alive   client  1.6.1  2         dc1  <default>
+```
 
 
-
-====
-## from client-0
-sudo docker run --rm -d -p 127.0.0.1:5678:5678 --name echo hashicorp/http-echo -text="hi from echo server"
-sudo docker run --network=container:echo consul connect proxy --sidecar-for echo --http-addr 172.17.0.1:8500
-
-## from client-1
-sudo docker run --name caller -p 172.17.0.1:9000:9000  amouat/network-utils python -m SimpleHTTPServer 9000
-sudo docker exec -it caller sh
-sudo docker run --network=container:caller consul connect proxy --sidecar-for caller --http-addr 172.17.0.1:8500    // --service-addr 172.17.0.1
+\* except "provisionner" which is used to run ansible scripts and is not part of the cluster

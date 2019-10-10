@@ -1,0 +1,39 @@
+---
+
+- name: generate consul encryption key
+  shell: consul keygen
+  register: consul_keygen
+  when: inventory_hostname == 'master'
+
+- name: add consul_key to master facts so other hosts can use it
+  set_fact: consul_key={{consul_keygen.stdout}}
+  when: inventory_hostname == 'master'
+
+- name: consul service definition 
+  become: yes
+  copy:
+    src: ../templates/consul.service
+    dest: /etc/systemd/system/consul.service
+    mode: '0640'
+    owner: vagrant
+    
+- name: ensure /etc/consul.d/ directory exists
+  become: yes
+  file:
+    path: /etc/consul.d/
+    state: directory
+    owner: vagrant
+
+- name: set consul agent config file
+  template:
+    src: ../templates/{{inventory_hostname}}.j2
+    dest: /etc/consul.d/consul.hcl
+    mode: '0640'
+    owner: vagrant
+
+- name: start consul service
+  systemd:
+    state: started
+    enabled: yes
+    name: consul
+    daemon_reload: yes

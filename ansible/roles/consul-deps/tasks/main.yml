@@ -1,9 +1,0 @@
----
-
-# - name: install docker
-#   import_tasks: docker.yml
-
-- name: install consul
-  import_tasks: consul.yml
-
-
