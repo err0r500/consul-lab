@@ -19,7 +19,6 @@
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
-  when: inventory_hostname != 'master'
     
 - name: add docker repo to apt
   apt_repository:
