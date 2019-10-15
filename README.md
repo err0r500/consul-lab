@@ -1,4 +1,4 @@
-# Consul lab
+# Consul Connect with Docker
 
 The simplest way to get a fully working Consul Cluster on 3 VMs :)
 
