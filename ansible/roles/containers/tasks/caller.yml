@@ -1,0 +1,36 @@
+---
+
+- name: add caller service definition 
+  become: yes
+  copy:
+    src: ../../../../files/caller.hcl
+    dest: /etc/consul.d/caller.hcl
+    mode: '0640'
+    owner: vagrant
+  when: inventory_hostname == 'worker-1'
+ 
+- name: reload consul 
+  shell: consul reload
+  when: inventory_hostname == 'worker-1'
+  
+- name: start caller proxy 
+  docker_container:
+    name: caller_proxy
+    image: consul:latest
+    command: connect proxy --sidecar-for caller --http-addr 172.17.0.1:8500 
+    auto_remove: true
+    state: started
+    restart: yes
+    published_ports:
+      - "21000:21000"
+  when: inventory_hostname == 'worker-1'
+
+- name: start caller 
+  docker_container:
+    name: caller
+    image: amouat/network-utils
+    command: python -m SimpleHTTPServer 9000
+    state: started
+    restart: yes
+    network_mode: "container:caller_proxy"
+  when: inventory_hostname == 'worker-1'

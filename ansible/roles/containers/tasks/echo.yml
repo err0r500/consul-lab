@@ -1,0 +1,36 @@
+---
+
+- name: add echo service definition 
+  become: yes
+  copy:
+    src: ../../../../files/echo.hcl
+    dest: /etc/consul.d/echo.hcl
+    mode: '0640'
+    owner: vagrant
+  when: inventory_hostname == 'worker-0'
+ 
+- name: reload consul 
+  shell: consul reload
+  when: inventory_hostname == 'worker-0'
+  
+- name: start echo proxy 
+  docker_container:
+    name: echo_proxy
+    image: consul:latest
+    command: connect proxy --sidecar-for echo --http-addr 172.17.0.1:8500 
+    auto_remove: true
+    state: started
+    restart: yes
+    published_ports:
+      - "20000:20000"
+  when: inventory_hostname == 'worker-0'
+
+- name: start echo 
+  docker_container:
+    name: echo
+    image: hashicorp/http-echo 
+    command: -text="hi from echo server" 
+    state: started
+    restart: yes
+    network_mode: "container:echo_proxy"
+  when: inventory_hostname == 'worker-0'

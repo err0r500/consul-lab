@@ -1,4 +1,4 @@
-services = {
+service {
   name = "echo"
   port = 5678
   connect = {
@@ -6,11 +6,10 @@ services = {
       checks = [
         {
           Name = "Connect Sidecar Listening"
-          docker_container_id = "container_id"
-          ttl = "10s"
+          alias_service = "echo"
         }
       ]
+      port = 20000
     }
   }
 }
-

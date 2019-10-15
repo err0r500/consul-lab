@@ -12,3 +12,9 @@
   become: yes
   roles:
     - consul-install
+
+- name: start containers 
+  hosts: workers
+  become: yes
+  roles:
+    - containers

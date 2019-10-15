@@ -1,0 +1,7 @@
+---
+
+- name: echo
+  import_tasks: echo.yml
+
+- name: caller
+  import_tasks: caller.yml
